@@ -23,6 +23,38 @@ class MyGame
 
   def render
     outputs.sprites << player
+    render_borders
+  end
+
+  def render_borders
+    outputs.solids << { x: 0,
+                        y: 0,
+                        w: 1280,
+                        h: 10,
+                        r: 40,
+                        g: 80,
+                        b: 90 }
+    outputs.solids << { x: 0,
+                        y: 710,
+                        w: 1280,
+                        h: 10,
+                        r: 40,
+                        g: 80,
+                        b: 10 }
+    outputs.solids << { x: 0,
+                        y: 0,
+                        w: 10,
+                        h: 710,
+                        r: 10,
+                        g: 20,
+                        b: 90 }
+    outputs.solids << { x: 1270,
+                        y: 0,
+                        w: 10,
+                        h: 710,
+                        r: 40,
+                        g: 80,
+                        b: 90 }
   end
 end
 
@@ -40,13 +72,13 @@ class Player
 
   def move(direction)
     if direction == :left
-      @x -= 10
+      @x -= 10 if x > 10
     elsif direction == :right
-      @x += 10
+      @x += 10 if x < 1250
     elsif direction == :down
-      @y -= 10
+      @y -= 10 if y > 10
     elsif direction == :up
-      @y += 10
+      @y += 10 if y < 690
     end
   end
 
