@@ -30,7 +30,7 @@ class MyGame
   end
 
   private def render_scenario
-    outputs.static_solids << [10, 10, 1270, 710, 190, 190, 220]
+    outputs.solids << [10, 10, 1270, 710, 190, 190, 220]
 
     outputs.static_solids << { x: 0, y: 0,
                                w: Grid.allscreen_w, h: 10,
@@ -88,7 +88,7 @@ class Player
     end
 
     if should_update
-      @running = tick_count
+      @running ||= tick_count
       update
     else
       stop
