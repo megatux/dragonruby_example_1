@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class MyGame
   attr_gtk
   attr_reader :player
@@ -55,9 +53,14 @@ class Player
     @engine = engine
     @x = x
     @y = y
-    @w = 20
-    @h = 20
-    @path = "mygame/sprites/t1/character.png"
+    @w = 48
+    @h = 48
+    @source_x = 0
+    @source_y = 0
+    @source_w = @w
+    @source_h = @h
+    @running = false
+    @path = "mygame/sprites/t1/punk_run.png"
   end
 
   def handle_input(keyboard)
@@ -72,11 +75,11 @@ class Player
     when :left
       @x -= 10 if x > 10 && no_collision
     when :right
-      @x += 10 if x < 1250 && no_collision
+      @x += 10 if x < (Grid.allscreen_w - @w) && no_collision
     when :down
       @y -= 10 if y > 10 && no_collision
     when :up
-      @y += 10 if y < 690 && no_collision
+      @y += 10 if y < (Grid.allscreen_h - @h) && no_collision
     end
   end
 
