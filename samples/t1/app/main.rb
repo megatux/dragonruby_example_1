@@ -17,12 +17,8 @@ class MyGame
   end
 
   def handle_input
-    player.move(:left) if keyboard.left
-    player.move(:right) if keyboard.right
-    player.move(:down) if keyboard.down
-    player.move(:up) if keyboard.up
-
     gtk.request_quit if keyboard.key_down.escape
+    player.handle_input(keyboard)
   end
 
   def render
@@ -78,6 +74,13 @@ class Player
     @w = 20
     @h = 20
     @path = "mygame/sprites/t1/character.png"
+  end
+
+  def handle_input(keyboard)
+    move(:left) if keyboard.left
+    move(:right) if keyboard.right
+    move(:down) if keyboard.down
+    move(:up) if keyboard.up
   end
 
   def move(direction)
