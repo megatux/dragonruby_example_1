@@ -13,7 +13,7 @@ class MyGame
     handle_input
     render
 
-    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running} key:#{keyboard.active}" ]
+    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running} key:#{keyboard.active}"]
   end
 
   def handle_input
@@ -32,34 +32,18 @@ class MyGame
   end
 
   def render_borders
-    outputs.static_solids << { x: 0,
-                              y: 0,
-                              w: Grid.allscreen_w,
-                              h: 10,
-                              r: 40,
-                              g: 80,
-                              b: 90 }
-    outputs.static_solids << { x: 0,
-                               y: Grid.allscreen_h - 10,
-                               w: Grid.allscreen_w,
-                               h: 10,
-                               r: 40,
-                               g: 80,
-                               b: 10 }
-    outputs.static_solids << { x: 0,
-                               y: 0,
-                               w: 10,
-                               h: Grid.allscreen_h - 10,
-                               r: 10,
-                               g: 20,
-                               b: 90 }
-    outputs.static_solids << { x: Grid.allscreen_w - 10,
-                               y: 0,
-                               w: 10,
-                               h: Grid.allscreen_h - 10,
-                               r: 40,
-                               g: 80,
-                               b: 90 }
+    outputs.static_solids << { x: 0, y: 0,
+                               w: Grid.allscreen_w, h: 10,
+                               r: 40, g: 80, b: 90 }
+    outputs.static_solids << { x: 0, y: Grid.allscreen_h - 10,
+                               w: Grid.allscreen_w, h: 10,
+                               r: 40, g: 80, b: 10 }
+    outputs.static_solids << { x: 0, y: 0,
+                               w: 10, h: Grid.allscreen_h - 10,
+                               r: 10, g: 20, b: 90 }
+    outputs.static_solids << { x: Grid.allscreen_w - 10, y: 0,
+                               w: 10, h: Grid.allscreen_h - 10,
+                               r: 40, g: 80, b: 90 }
   end
 end
 
