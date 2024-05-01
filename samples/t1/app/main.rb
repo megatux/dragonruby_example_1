@@ -10,26 +10,28 @@ class MyGame
   def tick
     handle_input
     render
-
-    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running} key:#{keyboard.active}"]
+    debug
   end
 
-  def handle_input
+  private def debug
+    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
+    outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
+    outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
+  end
+
+  private def handle_input
     gtk.request_quit if keyboard.key_down.escape
-    player.handle_input(keyboard)
+    player.handle_input(keyboard, args.tick_count)
   end
 
-  def render
+  private def render
+    render_scenario
     outputs.sprites << player
-    render_bg
-    render_borders
   end
 
-  def render_bg
-    #output
-  end
+  private def render_scenario
+    outputs.static_solids << [10, 10, 1270, 710, 190, 190, 220]
 
-  def render_borders
     outputs.static_solids << { x: 0, y: 0,
                                w: Grid.allscreen_w, h: 10,
                                r: 40, g: 80, b: 90 }
@@ -47,12 +49,14 @@ end
 
 class Player
   attr_sprite
-  attr_reader :running, :x, :y
+  attr :running
+  attr_reader :running, :x, :y, :source_x, :source_y
 
   def initialize(engine, x, y)
     @engine = engine
     @x = x
     @y = y
+
     @w = 48
     @h = 48
     @source_x = 0
@@ -63,11 +67,32 @@ class Player
     @path = "mygame/sprites/t1/punk_run.png"
   end
 
-  def handle_input(keyboard)
-    move(:left) if keyboard.left
-    move(:right) if keyboard.right
-    move(:down) if keyboard.down
-    move(:up) if keyboard.up
+  def handle_input(keyboard, tick_count)
+    should_update = false
+
+    if keyboard.left
+      move(:left)
+      should_update = true
+    end
+    if keyboard.right
+      move(:right)
+      should_update = true
+    end
+    if keyboard.down
+      move(:down)
+      should_update = true
+    end
+    if keyboard.up
+      move(:up)
+      should_update = true
+    end
+
+    if should_update
+      @running = tick_count
+      update
+    else
+      stop
+    end
   end
 
   def move(direction)
@@ -83,7 +108,16 @@ class Player
     end
   end
 
-  def tick(_args)
+  def stop
+    @running = false
+  end
+
+  # Update source_x based on frame_index if currently running
+  def update
+    if @running
+      @source_x =
+        @source_w * @running.frame_index(count: 6, hold_for: 4, repeat: true)
+    end
   end
 
   def no_collision
@@ -91,7 +125,7 @@ class Player
   end
 end
 
-# ---------------------------------------
+# ----------------- MAIN ----------------------
 def tick(engine)
   $my_game ||= MyGame.new(engine)
   $my_game.args = engine
