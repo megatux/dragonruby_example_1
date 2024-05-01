@@ -12,6 +12,8 @@ class MyGame
   def tick
     handle_input
     render
+
+    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running} key:#{keyboard.active}" ]
   end
 
   def handle_input
@@ -67,6 +69,7 @@ end
 
 class Player
   attr_sprite
+  attr_reader :running, :x, :y
 
   def initialize(engine, x, y)
     @engine = engine
