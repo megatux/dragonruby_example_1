@@ -67,7 +67,9 @@ class Player
     @source_w = @w
     @source_h = @h
     @running = false
-    @path = "mygame/sprites/t1/punk_run.png"
+    @path_run = "mygame/sprites/t1/punk_run.png"
+    @path_idle = "mygame/sprites/t1/punk_idle.png"
+    @path = @path_run
   end
 
   def handle_input(keyboard, tick_count)
@@ -90,12 +92,8 @@ class Player
       should_run = true
     end
 
-    if should_run
-      @running ||= tick_count
-    else
-      stop_running
-    end
-    update_running
+    @running ||= tick_count
+    update_character_animation(should_run)
   end
 
   def move(direction)
@@ -116,11 +114,13 @@ class Player
   end
 
   # Update source_x based on frame_index if currently running
-  def update_running
-    @source_x = if @running
-      @source_w * @running.frame_index(count: 6, hold_for: 4, repeat: true)
+  def update_character_animation(should_run)
+    @path = should_run ? @path_run : @path_idle
+
+    @source_x = if should_run
+      @source_w * @running.frame_index(count: 6, hold_for: 6, repeat: true)
     else
-      0
+      @source_w * @running.frame_index(count: 4, hold_for: 12, repeat: true)
     end
   end
 
