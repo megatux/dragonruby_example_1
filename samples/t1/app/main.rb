@@ -1,7 +1,7 @@
 class MyGame
   attr_gtk
   attr_reader :player
-  alias engine args
+  alias_method :engine, :args
 
   def initialize(engine)
     @player = Player.new(engine, engine.grid.w / 2, engine.grid.h / 2)
@@ -25,13 +25,16 @@ class MyGame
   end
 
   private def render
+    draw_statics unless state.statics
     render_scenario
     outputs.sprites << player
   end
 
   private def render_scenario
     outputs.solids << [10, 10, 1270, 710, 190, 190, 220]
+  end
 
+  private def draw_statics
     outputs.static_solids << { x: 0, y: 0,
                                w: Grid.allscreen_w, h: 10,
                                r: 40, g: 80, b: 90 }
@@ -44,12 +47,12 @@ class MyGame
     outputs.static_solids << { x: Grid.allscreen_w - 10, y: 0,
                                w: 10, h: Grid.allscreen_h - 10,
                                r: 40, g: 80, b: 90 }
+    state.statics = true
   end
 end
 
 class Player
   attr_sprite
-  attr :running
   attr_reader :running, :x, :y, :source_x, :source_y
 
   def initialize(engine, x, y)
@@ -68,31 +71,31 @@ class Player
   end
 
   def handle_input(keyboard, tick_count)
-    should_update = false
+    should_run = false
 
     if keyboard.left
       move(:left)
-      should_update = true
+      should_run = true
     end
     if keyboard.right
       move(:right)
-      should_update = true
+      should_run = true
     end
     if keyboard.down
       move(:down)
-      should_update = true
+      should_run = true
     end
     if keyboard.up
       move(:up)
-      should_update = true
+      should_run = true
     end
 
-    if should_update
+    if should_run
       @running ||= tick_count
-      update
     else
-      stop
+      stop_running
     end
+    update_running
   end
 
   def move(direction)
@@ -108,15 +111,16 @@ class Player
     end
   end
 
-  def stop
+  def stop_running
     @running = false
   end
 
   # Update source_x based on frame_index if currently running
-  def update
-    if @running
-      @source_x =
-        @source_w * @running.frame_index(count: 6, hold_for: 4, repeat: true)
+  def update_running
+    @source_x = if @running
+      @source_w * @running.frame_index(count: 6, hold_for: 4, repeat: true)
+    else
+      0
     end
   end
 
