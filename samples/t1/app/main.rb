@@ -27,7 +27,7 @@ class MyGame
   end
 
   def render
-    draw_statics unless state.statics
+    draw_statics unless state.statics_drawed
     render_scenario
     state.game_paused ? render_pause : render_entities
     show_debug_data if state.debug_on
@@ -65,7 +65,7 @@ class MyGame
     outputs.static_solids << { x: Grid.allscreen_w - 10, y: 0,
                                w: 10, h: Grid.allscreen_h - 10,
                                r: 40, g: 80, b: 90 }
-    state.statics = true
+    state.statics_drawed = true
   end
 end
 
