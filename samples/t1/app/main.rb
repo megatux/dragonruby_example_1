@@ -5,15 +5,16 @@ class MyGame
 
   def initialize(engine)
     @player = Player.new(engine, engine.grid.w / 2, engine.grid.h / 2)
+    engine.state.debug_on = false
   end
 
   def tick
     handle_input
     render
-    debug
   end
 
   private def debug
+    outputs.borders << [15, 11, 500, 65]
     outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
     outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
     outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
@@ -21,6 +22,10 @@ class MyGame
 
   private def handle_input
     gtk.request_quit if keyboard.key_down.escape
+    if keyboard.key_up.x
+      state.debug_on = !state.debug_on
+    end
+
     player.handle_input(keyboard, args.tick_count)
   end
 
@@ -28,6 +33,7 @@ class MyGame
     draw_statics unless state.statics
     render_scenario
     outputs.sprites << player
+    debug if state.debug_on
   end
 
   private def render_scenario
