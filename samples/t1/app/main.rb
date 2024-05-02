@@ -49,7 +49,7 @@ class MyGame
   end
 
   def render_scenario
-    outputs.solids << [10, 10, 1270, 710, 190, 190, 220]
+    outputs.solids << [10, 10, 1270, 710, 209, 165, 138]
   end
 
   def draw_statics
@@ -88,6 +88,7 @@ class Player
     @path_run = "mygame/sprites/t1/punk_run.png"
     @path_idle = "mygame/sprites/t1/punk_idle.png"
     @path = @path_run
+    @flip_horizontally = false
   end
 
   def handle_input(keyboard, tick_count)
@@ -96,10 +97,12 @@ class Player
     if keyboard.left
       move(:left)
       should_run = true
+      @flip_horizontally = true
     end
     if keyboard.right
       move(:right)
       should_run = true
+      @flip_horizontally = false
     end
     if keyboard.down
       move(:down)
