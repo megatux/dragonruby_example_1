@@ -14,14 +14,16 @@ class MyGame
     render
   end
 
-  private def debug
+  private
+
+  def debug
     outputs.borders << [15, 11, 500, 65]
     outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
     outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
     outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
   end
 
-  private def handle_input
+  def handle_input
     gtk.request_quit if keyboard.key_down.escape
     if keyboard.key_up.x
       state.debug_on = !state.debug_on
@@ -30,18 +32,18 @@ class MyGame
     player.handle_input(keyboard, args.tick_count)
   end
 
-  private def render
+  def render
     draw_statics unless state.statics
     render_scenario
     outputs.sprites << player
     debug if state.debug_on
   end
 
-  private def render_scenario
+  def render_scenario
     outputs.solids << [10, 10, 1270, 710, 190, 190, 220]
   end
 
-  private def draw_statics
+  def draw_statics
     outputs.static_solids << { x: 0, y: 0,
                                w: Grid.allscreen_w, h: 10,
                                r: 40, g: 80, b: 90 }
