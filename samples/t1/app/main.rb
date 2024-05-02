@@ -6,6 +6,7 @@ class MyGame
     @args = engine
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @args.state.debug_on = false
+    @args.state.game_paused = false
   end
 
   def tick(args)
@@ -16,18 +17,11 @@ class MyGame
 
   private
 
-  def debug
-    outputs.borders << [15, 11, 500, 65]
-    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
-    outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
-    outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
-  end
-
   def handle_input
     gtk.request_quit if keyboard.key_down.escape
-    if keyboard.key_up.x
-      state.debug_on = !state.debug_on
-    end
+    state.debug_on = !state.debug_on if keyboard.key_up.x
+
+    state.game_paused = !args.inputs.keyboard.has_focus
 
     player.handle_input(keyboard, args.tick_count)
   end
@@ -35,8 +29,19 @@ class MyGame
   def render
     draw_statics unless state.statics
     render_scenario
+    render_entities
+    show_debug_data if state.debug_on
+  end
+
+  def show_debug_data
+    outputs.borders << [15, 11, 500, 65]
+    outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
+    outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
+    outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
+  end
+
+  def render_entities
     outputs.sprites << player
-    debug if state.debug_on
   end
 
   def render_scenario
