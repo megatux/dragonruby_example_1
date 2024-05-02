@@ -29,7 +29,7 @@ class MyGame
   def render
     draw_statics unless state.statics
     render_scenario
-    render_entities
+    state.game_paused ? render_pause : render_entities
     show_debug_data if state.debug_on
   end
 
@@ -42,6 +42,10 @@ class MyGame
 
   def render_entities
     outputs.sprites << player
+  end
+
+  def render_pause
+    outputs.labels << [grid.w / 2, grid.h / 2, "GAME PAUSED"]
   end
 
   def render_scenario
