@@ -1,14 +1,15 @@
 class MyGame
   attr_gtk
   attr_reader :player
-  alias_method :engine, :args
 
   def initialize(engine)
-    @player = Player.new(engine, engine.grid.w / 2, engine.grid.h / 2)
-    engine.state.debug_on = false
+    @args = engine
+    @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
+    @args.state.debug_on = false
   end
 
-  def tick
+  def tick(args)
+    @args = args
     handle_input
     render
   end
@@ -138,6 +139,5 @@ end
 # ----------------- MAIN ----------------------
 def tick(engine)
   $my_game ||= MyGame.new(engine)
-  $my_game.args = engine
-  $my_game.tick
+  $my_game.tick(engine)
 end
