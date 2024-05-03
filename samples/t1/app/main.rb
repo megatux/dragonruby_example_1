@@ -72,8 +72,10 @@ class MyGame
 
   def render_start_screen
     draw_statics unless state.statics_drawed
+    audio[:start] ||= { input: "mygame/sounds/fire.wav", gain: 0.2 }
+
     render_scenario
-    outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "--THE GAME--"]
+    outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "---THE FIRE---"]
     outputs.labels << [(grid.w / 2) - 100, grid.h / 2, "PRESS ENTER TO START"]
     @big_fire.update(tick_count)
     outputs.sprites << @big_fire
