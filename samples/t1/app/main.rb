@@ -52,15 +52,21 @@ class MyGame
     draw_statics unless state.statics_drawed
 
     render_scenario
+
     if state.game_paused
       render_pause
     else
       render_entities
       if collision?
         outputs.labels << [400, 400, "COLLISION"]
-        audio[:hit] ||= { input: "mygame/sounds/explode.wav" } if !audio[:hit]
+        player_hit
+        if player.death?
+          state.screen = :start
+          @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
+        end
       end
     end
+
     show_debug_data if state.debug_on
   end
 
@@ -111,6 +117,9 @@ class MyGame
 
   def render_scenario
     outputs.solids << [10, 10, 1270, 710, 209, 165, 138]
+    @player.lives.times do |l|
+      outputs.solids << { x: 20 + (l*20), y: 690, w: 15, h: 15, r: 200, g: 0, b: 0 }
+    end
   end
 
   def draw_statics
@@ -134,14 +143,22 @@ class MyGame
       f.collision_rect.intersect_rect?(player.collision_rect)
     end
   end
+
+  def player_hit
+    if !audio[:hit]
+      player.hit
+      audio[:hit] ||= { input: "mygame/sounds/explode.wav" }
+    end
+  end
 end
 
 class Player
   attr_sprite
-  attr_reader :running, :x, :y, :w, :real_w, :h, :real_h, :source_x, :source_y
+  attr_reader :running, :x, :y, :w, :real_w, :h, :real_h, :source_x, :source_y, :lives
 
   def initialize(engine, x, y)
     @engine = engine
+    @lives = 5
     @x = x
     @y = y
 
@@ -204,10 +221,6 @@ class Player
     end
   end
 
-  def stop_running
-    @running = false
-  end
-
   # Update source_x based on frame_index if currently running
   def update_character_animation(should_run)
     @path = should_run ? @path_run : @path_idle
@@ -221,6 +234,14 @@ class Player
 
   def no_collision
     true
+  end
+
+  def hit
+    @lives -= 1 if lives > 0
+  end
+
+  def death?
+    lives <= 0
   end
 end
 
