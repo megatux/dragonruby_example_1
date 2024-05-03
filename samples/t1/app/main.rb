@@ -12,13 +12,10 @@ class MyGame
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
-    @floor_fires = [
-      FloorFire.new(@args, 850, 300),
-      FloorFire.new(@args, 100, 650),
-      FloorFire.new(@args, 400, 100),
-      FloorFire.new(@args, 1100, 200),
-      FloorFire.new(@args, 200, 500)
-    ]
+    @floor_fires = 100.times.map do |i|
+      xy = rnd_xy
+      FloorFire.new(@args, xy[0], xy[1])
+    end
   end
 
   def tick(args)
@@ -83,6 +80,17 @@ class MyGame
       fire.update(tick_count)
       outputs.sprites << fire
     end
+  end
+
+  def rnd_xy
+    x = rand(1200) + 30
+    y = rand(700) + 20
+
+    while (x - @player.x).abs < 30 && (y - @player.y).abs < 30
+      x = rand(1200) + 30
+      y = rand(700) + 20
+    end
+    [x, y]
   end
 
   def render_pause
