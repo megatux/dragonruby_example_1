@@ -4,9 +4,13 @@ class MyGame
 
   def initialize(engine)
     @args = engine
-    @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @args.state.debug_on = false
     @args.state.game_paused = false
+
+    # entities
+    @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
+    @big_fire = BigFire.new(@args, 200, 200)
+    @floor_fire = FloorFire.new(@args, 900, 300)
   end
 
   def tick(args)
@@ -28,7 +32,9 @@ class MyGame
 
   def render
     draw_statics unless state.statics_drawed
+
     render_scenario
+
     state.game_paused ? render_pause : render_entities
     show_debug_data if state.debug_on
   end
@@ -42,6 +48,12 @@ class MyGame
 
   def render_entities
     outputs.sprites << player
+
+    @big_fire.update(tick_count)
+    outputs.sprites << @big_fire
+
+    @floor_fire.update(tick_count)
+    outputs.sprites << @floor_fire
   end
 
   def render_pause
@@ -120,7 +132,7 @@ class Player
   def move(direction)
     case direction
     when :left
-      @x -= 10 if x > 10 && no_collision
+      @x -= 10 if x > -10 && no_collision
     when :right
       @x += 10 if x < (Grid.allscreen_w - @w) && no_collision
     when :down
@@ -147,6 +159,55 @@ class Player
 
   def no_collision
     true
+  end
+end
+
+class BigFire
+  attr_sprite
+
+  def initialize(engine, x, y)
+    @engine = engine
+    @x = x
+    @y = y
+
+    @w = 400
+    @h = 400
+    @source_x = 0
+    @source_y = 0
+    @source_w = @w
+    @source_h = @h
+    @running = false
+    @path_base = "mygame/sprites/t1/explosion_"
+    update
+  end
+
+  def update(tick_count = 1)
+    idx = ((tick_count % 6) + 1).frame_index(count: 6, hold_for: 4, repeat: true)
+    @path = @path_base + (idx.to_s || "1") + ".png"
+  end
+end
+
+class FloorFire
+  attr_sprite
+
+  def initialize(engine, x, y)
+    @engine = engine
+    @x = x
+    @y = y
+
+    @w = 24
+    @h = 32
+    @source_x = 0
+    @source_y = 0
+    @source_w = @w
+    @source_h = @h
+    @running = false
+    @path = "mygame/sprites/t1/burning_loop_1.png"
+    update(0)
+  end
+
+  def update(tick_count = 0)
+    @source_x = @source_w * ((tick_count || 0) % 8).frame_index(count: 8, hold_for: 6, repeat: true)
   end
 end
 
