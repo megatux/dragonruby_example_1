@@ -13,7 +13,7 @@ class MyGame
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
     @floor_fires = 100.times.map do |i|
-      xy = rnd_xy
+      xy = rand_xy
       FloorFire.new(@args, xy[0], xy[1])
     end
   end
@@ -71,6 +71,11 @@ class MyGame
     outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
     outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
     outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
+
+    outputs.borders << player.collision_rect
+    @floor_fires.each do |f|
+      outputs.borders << f.collision_rect
+    end
   end
 
   def render_entities
@@ -80,11 +85,15 @@ class MyGame
       fire.update
       outputs.sprites << fire
     end
+
+    if collision?
+      outputs.labels << [400, 400, "COLLISION"]
+    end
   end
 
-  def rnd_xy
+  def rand_xy
     x = rand(1200) + 30
-    y = rand(700) + 20
+    y = rand(700)
 
     while (x - @player.x).abs < 30 && (y - @player.y).abs < 30
       x = rand(1200) + 30
@@ -116,11 +125,17 @@ class MyGame
                                r: 40, g: 80, b: 90 }
     state.statics_drawed = true
   end
+
+  def collision?
+    @floor_fires.any? do |f|
+      f.collision_rect.intersect_rect?(player.collision_rect)
+    end
+  end
 end
 
 class Player
   attr_sprite
-  attr_reader :running, :x, :y, :source_x, :source_y
+  attr_reader :running, :x, :y, :w, :real_w, :h, :real_h, :source_x, :source_y
 
   def initialize(engine, x, y)
     @engine = engine
@@ -128,7 +143,10 @@ class Player
     @y = y
 
     @w = 48
+    @real_w = 25
     @h = 48
+    @real_h = 38
+
     @source_x = 0
     @source_y = 0
     @source_w = @w
@@ -138,6 +156,10 @@ class Player
     @path_idle = "mygame/sprites/t1/punk_idle.png"
     @path = @path_run
     @flip_horizontally = false
+  end
+
+  def collision_rect
+    { x: @flip_horizontally ? x + 22 : x, y: y - 2, w: real_w, h: real_h }
   end
 
   def handle_input(keyboard, tick_count)
@@ -245,6 +267,10 @@ class FloorFire
     frame = @frame.frame_index(count: 8, hold_for: @frame_speed, repeat: true)
     # @engine.outputs.labels << [@x, @y + 5, frame]
     @source_x = @source_w * frame
+  end
+
+  def collision_rect
+    { x: x + 2, y: y, w: w - 4, h: h - 8 }
   end
 end
 
