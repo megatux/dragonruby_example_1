@@ -77,7 +77,7 @@ class MyGame
     outputs.sprites << player
 
     @floor_fires.each do |fire|
-      fire.update(tick_count)
+      fire.update
       outputs.sprites << fire
     end
   end
@@ -213,7 +213,6 @@ class BigFire
     @source_y = 0
     @source_w = @w
     @source_h = @h
-    @running = false
     @path_base = "mygame/sprites/t1/explosion_"
     update
   end
@@ -231,20 +230,21 @@ class FloorFire
     @engine = engine
     @x = x
     @y = y
-
+    @frame = rand(8)
+    @frame_speed = rand(30) + 5
     @w = 24
     @h = 32
     @source_x = 0
     @source_y = 0
     @source_w = @w
     @source_h = @h
-    @running = false
     @path = "mygame/sprites/t1/burning_loop_1.png"
-    update(0)
   end
 
-  def update(tick_count = 0)
-    @source_x = @source_w * ((tick_count || 0) % 8).frame_index(count: 8, hold_for: 6, repeat: true)
+  def update
+    frame = @frame.frame_index(count: 8, hold_for: @frame_speed, repeat: true)
+    # @engine.outputs.labels << [@x, @y + 5, frame]
+    @source_x = @source_w * frame
   end
 end
 
