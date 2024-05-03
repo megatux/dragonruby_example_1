@@ -96,9 +96,10 @@ class MyGame
     draw_statics unless state.statics_drawed
     audio[:start] ||= { input: "mygame/sounds/fire.wav", gain: 0.2 }
 
-    render_scenario
+    outputs.solids << [10, 10, 1270, 710, 210, 15, 28]
     outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "---THE FIRE---"]
     outputs.labels << [(grid.w / 2) - 100, grid.h / 2, "PRESS ENTER TO START"]
+    outputs.labels << [600, 708, "HiScore: #{@hiscore}"]
     @big_fire.update(tick_count)
     outputs.sprites << @big_fire
   end
@@ -143,7 +144,7 @@ class MyGame
   end
 
   def render_scenario
-    outputs.solids << [10, 10, 1270, 710, 209, 165, 138]
+    outputs.solids << [10, 10, 1270, 710, 89, 215, 88]
 
     @player.lives.times do |l|
       outputs.labels << [10, 708, "Score: #{@score}"]
@@ -340,12 +341,12 @@ class Coin
     @engine = engine
     @x = x
     @y = y
-    @w = 16
-    @h = 16
+    @w = 32
+    @h = 32
     @source_x = 0
     @source_y = 0
-    @source_w = @w
-    @source_h = @h
+    @source_w = @w / 2
+    @source_h = @h / 2
     @path = "mygame/sprites/t1/coin.png"
   end
 
