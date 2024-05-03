@@ -8,6 +8,7 @@ class MyGame
     state.screen = :start
     state.debug_on = false
     state.game_paused = false
+    @hiscore = 0
 
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
@@ -119,8 +120,11 @@ class MyGame
 
   def render_scenario
     outputs.solids << [10, 10, 1270, 710, 209, 165, 138]
+
     @player.lives.times do |l|
-      outputs.solids << { x: 20 + (l*20), y: 690, w: 15, h: 15, r: 200, g: 0, b: 0 }
+      outputs.labels << [10, 708, "Hi Score: #{@hiscore}"]
+      outputs.labels << [210, 708, "Lives:"]
+      outputs.solids << { x: 280 + (l*20), y: 690, w: 15, h: 15, r: 200, g: 0, b: 0 }
     end
   end
 
