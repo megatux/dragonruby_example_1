@@ -52,8 +52,15 @@ class MyGame
     draw_statics unless state.statics_drawed
 
     render_scenario
-
-    state.game_paused ? render_pause : render_entities
+    if state.game_paused
+      render_pause
+    else
+      render_entities
+      if collision?
+        outputs.labels << [400, 400, "COLLISION"]
+        audio[:hit] ||= { input: "mygame/sounds/explode.wav" } if !audio[:hit]
+      end
+    end
     show_debug_data if state.debug_on
   end
 
@@ -84,10 +91,6 @@ class MyGame
     @floor_fires.each do |fire|
       fire.update
       outputs.sprites << fire
-    end
-
-    if collision?
-      outputs.labels << [400, 400, "COLLISION"]
     end
   end
 
