@@ -8,15 +8,21 @@ class MyGame
     state.screen = :start
     state.debug_on = false
     state.game_paused = false
-    @hiscore = 0
+    @score = @hiscore = 0
 
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
-    @floor_fires = 100.times.map do |i|
+    @floor_fires = 50.times.map do |i|
       xy = rand_xy
       FloorFire.new(@args, xy[0], xy[1])
     end
+    @coin = new_coin
+  end
+
+  def new_coin
+    coin_pos = rand_xy
+    Coin.new(@args, coin_pos[0], coin_pos[1])
   end
 
   def tick(args)
@@ -58,8 +64,16 @@ class MyGame
       render_pause
     else
       render_entities
+
+      if coin_picked?
+        outputs.labels << [700, 400, "COIN!"] if state.debug_on
+        @score += 1
+        audio[:collected] ||= { input: "mygame/sounds/collected.wav" }
+        @coin = new_coin
+      end
+
       if collision?
-        outputs.labels << [400, 400, "COLLISION"]
+        outputs.labels << [400, 400, "COLLISION"] if state.debug_on
         player_hit
         if player.death?
           state.screen = :start
@@ -86,12 +100,13 @@ class MyGame
     outputs.borders << [15, 11, 500, 65]
     outputs.labels << [20, 30, "DEBUG: x:#{player.x}/y:#{player.y} - running:#{player.running}"]
     outputs.labels << [20, 50, "DEBUG: source_x:#{player.source_x}/source_y:#{player.source_y}"]
-    outputs.labels << [20, 70, "DEBUG: Frame idx:#{player.running ? player.running.frame_index(count: 6, repeat: true) : player.running}"]
+    outputs.labels << [20, 70, "DEBUG: #{@coin.collision_rect}"]
 
     outputs.borders << player.collision_rect
     @floor_fires.each do |f|
       outputs.borders << f.collision_rect
     end
+    outputs.borders << @coin.collision_rect
   end
 
   def render_entities
@@ -101,6 +116,8 @@ class MyGame
       fire.update
       outputs.sprites << fire
     end
+    @coin.update(tick_count)
+    outputs.sprites << @coin
   end
 
   def rand_xy
@@ -122,7 +139,8 @@ class MyGame
     outputs.solids << [10, 10, 1270, 710, 209, 165, 138]
 
     @player.lives.times do |l|
-      outputs.labels << [10, 708, "Hi Score: #{@hiscore}"]
+      outputs.labels << [10, 708, "Score: #{@score}"]
+      outputs.labels << [500, 708, "HiScore: #{@hiscore}"]
       outputs.labels << [210, 708, "Lives:"]
       outputs.solids << { x: 280 + (l*20), y: 690, w: 15, h: 15, r: 200, g: 0, b: 0 }
     end
@@ -148,6 +166,10 @@ class MyGame
     @floor_fires.any? do |f|
       f.collision_rect.intersect_rect?(player.collision_rect)
     end
+  end
+
+  def coin_picked?
+    @coin.collision_rect.intersect_rect?(player.collision_rect)
   end
 
   def player_hit
@@ -304,6 +326,31 @@ class FloorFire
   end
 end
 
+class Coin
+  attr_sprite
+
+  def initialize(engine, x, y)
+    @engine = engine
+    @x = x
+    @y = y
+    @w = 16
+    @h = 16
+    @source_x = 0
+    @source_y = 0
+    @source_w = @w
+    @source_h = @h
+    @path = "mygame/sprites/t1/coin.png"
+  end
+
+  def update(tick_count)
+    frame = tick_count.frame_index(count: 6, hold_for: 5, repeat: true)
+    @source_x = @source_w * 1.frame_index(count: 6, hold_for: 5, repeat: true)
+  end
+
+  def collision_rect
+    { x: x + 2, y: y, w: w, h: h }
+  end
+end
 # ----------------- MAIN ----------------------
 def tick(engine)
   $my_game ||= MyGame.new(engine)
