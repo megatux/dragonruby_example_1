@@ -4,10 +4,12 @@ class MyGame
 
   def initialize(engine)
     @args = engine
-    @args.state.debug_on = false
-    @args.state.game_paused = false
 
-    # entities
+    state.screen = :start
+    state.debug_on = false
+    state.game_paused = false
+
+    # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
     @floor_fire = FloorFire.new(@args, 900, 300)
@@ -15,8 +17,14 @@ class MyGame
 
   def tick(args)
     @args = args
-    handle_input
-    render
+
+    if state.screen == :start
+      handle_start_input
+      render_start_screen
+    else
+      handle_input
+      render_ingame
+    end
   end
 
   private
@@ -30,13 +38,29 @@ class MyGame
     player.handle_input(keyboard, args.tick_count)
   end
 
-  def render
+  def handle_start_input
+    gtk.request_quit if keyboard.key_down.escape
+    if keyboard.enter
+      state.screen = :ingame
+    end
+  end
+
+  def render_ingame
     draw_statics unless state.statics_drawed
 
     render_scenario
 
     state.game_paused ? render_pause : render_entities
     show_debug_data if state.debug_on
+  end
+
+  def render_start_screen
+    draw_statics unless state.statics_drawed
+    render_scenario
+    outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "--THE GAME--"]
+    outputs.labels << [(grid.w / 2) - 100, grid.h / 2, "PRESS ENTER TO START"]
+    @big_fire.update(tick_count)
+    outputs.sprites << @big_fire
   end
 
   def show_debug_data
@@ -48,9 +72,6 @@ class MyGame
 
   def render_entities
     outputs.sprites << player
-
-    @big_fire.update(tick_count)
-    outputs.sprites << @big_fire
 
     @floor_fire.update(tick_count)
     outputs.sprites << @floor_fire
