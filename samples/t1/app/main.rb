@@ -12,7 +12,13 @@ class MyGame
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
-    @floor_fire = FloorFire.new(@args, 900, 300)
+    @floor_fires = [
+      FloorFire.new(@args, 850, 300),
+      FloorFire.new(@args, 100, 650),
+      FloorFire.new(@args, 400, 100),
+      FloorFire.new(@args, 1100, 200),
+      FloorFire.new(@args, 200, 500)
+    ]
   end
 
   def tick(args)
@@ -73,8 +79,10 @@ class MyGame
   def render_entities
     outputs.sprites << player
 
-    @floor_fire.update(tick_count)
-    outputs.sprites << @floor_fire
+    @floor_fires.each do |fire|
+      fire.update(tick_count)
+      outputs.sprites << fire
+    end
   end
 
   def render_pause
