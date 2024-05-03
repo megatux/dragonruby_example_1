@@ -13,16 +13,20 @@ class MyGame
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
     @big_fire = BigFire.new(@args, 200, 200)
-    @floor_fires = 50.times.map do |i|
-      xy = rand_xy
-      FloorFire.new(@args, xy[0], xy[1])
-    end
+    @floor_fires = new_fires
     @coin = new_coin
   end
 
   def new_coin
     coin_pos = rand_xy
     Coin.new(@args, coin_pos[0], coin_pos[1])
+  end
+
+  def new_fires
+    50.times.map do |i|
+      xy = rand_xy
+      FloorFire.new(@args, xy[0], xy[1])
+    end
   end
 
   def tick(args)
@@ -79,6 +83,7 @@ class MyGame
         if player.death?
           state.screen = :start
           @score = 0
+          @floor_fires = new_fires
           @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
         end
       end
