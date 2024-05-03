@@ -68,6 +68,7 @@ class MyGame
       if coin_picked?
         outputs.labels << [700, 400, "COIN!"] if state.debug_on
         @score += 1
+        @hiscore = @score if @score > @hiscore
         audio[:collected] ||= { input: "mygame/sounds/collected.wav" }
         @coin = new_coin
       end
@@ -77,6 +78,7 @@ class MyGame
         player_hit
         if player.death?
           state.screen = :start
+          @score = 0
           @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
         end
       end
