@@ -246,13 +246,13 @@ class Player
   def move(direction)
     case direction
     when :left
-      @x -= 10 if x > -10 && no_collision
+      @x -= 5 if x > -10 && no_collision
     when :right
-      @x += 10 if x < (Grid.allscreen_w - @w) && no_collision
+      @x += 5 if x < (Grid.allscreen_w - @w) && no_collision
     when :down
-      @y -= 10 if y > 10 && no_collision
+      @y -= 5 if y > 10 && no_collision
     when :up
-      @y += 10 if y < (Grid.allscreen_h - @h) && no_collision
+      @y += 5 if y < (Grid.allscreen_h - @h) && no_collision
     end
   end
 
