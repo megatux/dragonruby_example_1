@@ -73,7 +73,7 @@ class MyGame
         outputs.labels << [700, 400, "COIN!"] if state.debug_on
         @score += 1
         @hiscore = @score if @score > @hiscore
-        audio[:collected] ||= { input: "mygame/sounds/collected.wav" }
+        audio[:collected] ||= { input: "sounds/collected.wav" }
         @coin = new_coin
       end
 
@@ -94,7 +94,7 @@ class MyGame
 
   def render_start_screen
     draw_statics unless state.statics_drawed
-    audio[:start] ||= { input: "mygame/sounds/fire.wav", gain: 0.2 }
+    audio[:start] ||= { input: "sounds/fire.wav", gain: 0.2 }
 
     outputs.solids << [10, 10, 1270, 710, 210, 15, 28]
     outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "---THE FIRE---"]
@@ -183,7 +183,7 @@ class MyGame
   def player_hit
     if !audio[:hit]
       player.hit
-      audio[:hit] ||= { input: "mygame/sounds/explode.wav" }
+      audio[:hit] ||= { input: "sounds/explode.wav" }
     end
   end
 end
@@ -208,8 +208,8 @@ class Player
     @source_w = @w
     @source_h = @h
     @running = false
-    @path_run = "mygame/sprites/t1/punk_run.png"
-    @path_idle = "mygame/sprites/t1/punk_idle.png"
+    @path_run = "sprites/punk_run.png"
+    @path_idle = "sprites/punk_idle.png"
     @path = @path_run
     @flip_horizontally = false
   end
@@ -295,7 +295,7 @@ class BigFire
     @source_y = 0
     @source_w = @w
     @source_h = @h
-    @path_base = "mygame/sprites/t1/explosion_"
+    @path_base = "sprites/explosion_"
     update
   end
 
@@ -320,7 +320,7 @@ class FloorFire
     @source_y = 0
     @source_w = @w
     @source_h = @h
-    @path = "mygame/sprites/t1/burning_loop_1.png"
+    @path = "sprites/burning_loop_1.png"
   end
 
   def update
@@ -347,7 +347,7 @@ class Coin
     @source_y = 0
     @source_w = @w / 2
     @source_h = @h / 2
-    @path = "mygame/sprites/t1/coin.png"
+    @path = "sprites/coin.png"
   end
 
   def update(tick_count)
