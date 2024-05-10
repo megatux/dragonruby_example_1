@@ -49,14 +49,12 @@ class MyGame
 
     state.game_paused = !args.inputs.keyboard.has_focus
 
-    player.handle_input(keyboard, args.tick_count)
+    player.handle_input(keyboard, inputs.controller_one, args.tick_count)
   end
 
   def handle_start_input
     gtk.request_quit if keyboard.key_down.escape
-    if keyboard.enter
-      state.screen = :ingame
-    end
+    state.screen = :ingame if keyboard.enter || inputs.controller_one.start
   end
 
   def render_ingame
@@ -218,24 +216,27 @@ class Player
     { x: @flip_horizontally ? x + 22 : x, y: y - 2, w: real_w, h: real_h }
   end
 
-  def handle_input(keyboard, tick_count)
+  def handle_input(keyboard, controller, tick_count)
     should_run = false
 
-    if keyboard.left
+    if keyboard.left || controller.left
       move(:left)
       should_run = true
       @flip_horizontally = true
     end
-    if keyboard.right
+
+    if keyboard.right || controller.right
       move(:right)
       should_run = true
       @flip_horizontally = false
     end
-    if keyboard.down
+
+    if keyboard.down || controller.down
       move(:down)
       should_run = true
     end
-    if keyboard.up
+
+    if keyboard.up || controller.up
       move(:up)
       should_run = true
     end
