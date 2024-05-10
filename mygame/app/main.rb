@@ -95,8 +95,8 @@ class MyGame
     audio[:start] ||= { input: "sounds/fire.wav", gain: 0.2 }
 
     outputs.solids << [10, 10, 1270, 710, 210, 15, 28]
-    outputs.labels << [(grid.w / 2) - 50, (grid.h / 2) + 70, "---THE FIRE---"]
-    outputs.labels << [(grid.w / 2) - 100, grid.h / 2, "PRESS ENTER TO START"]
+    outputs.labels << [(grid.w / 2) - 10, (grid.h / 2) + 70, "---THE FIRE---"]
+    outputs.labels << [(grid.w / 2) - 80, grid.h / 2, "PRESS ENTER OR START TO BEGIN"]
     outputs.labels << [600, 708, "HiScore: #{@hiscore}"]
     @big_fire.update(tick_count)
     outputs.sprites << @big_fire
