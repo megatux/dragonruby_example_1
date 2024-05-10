@@ -68,7 +68,6 @@ class MyGame
       render_entities
 
       if coin_picked?
-        outputs.labels << [700, 400, "COIN!"] if state.debug_on
         @score += 1
         @hiscore = @score if @score > @hiscore
         audio[:collected] ||= { input: "sounds/collected.wav" }
