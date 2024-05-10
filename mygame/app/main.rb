@@ -130,7 +130,7 @@ class MyGame
     x = rand(1200) + 30
     y = rand(700)
 
-    while (x - @player.x).abs < 30 && (y - @player.y).abs < 30
+    while (x - @player.x).abs < 30 && (y - @player.y).abs < 35
       x = rand(1200) + 30
       y = rand(700) + 20
     end
