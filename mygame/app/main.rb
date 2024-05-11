@@ -18,8 +18,13 @@ class MyGame
   end
 
   def new_coin
-    coin_pos = rand_xy
-    Coin.new(@args, coin_pos[0], coin_pos[1])
+    coin = nil
+    loop do
+      coin_pos = rand_xy
+      coin = Coin.new(@args, coin_pos[0], coin_pos[1])
+      break unless collision?(coin)
+    end
+    coin
   end
 
   def new_fires
@@ -74,7 +79,7 @@ class MyGame
         @coin = new_coin
       end
 
-      if collision?
+      if collision?(player)
         outputs.labels << [400, 400, "COLLISION"] if state.debug_on
         player_hit
         if player.death?
@@ -167,9 +172,9 @@ class MyGame
     state.statics_drawed = true
   end
 
-  def collision?
+  def collision?(entity)
     @floor_fires.any? do |f|
-      f.collision_rect.intersect_rect?(player.collision_rect)
+      f.collision_rect.intersect_rect?(entity.collision_rect)
     end
   end
 
