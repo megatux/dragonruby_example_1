@@ -2,7 +2,7 @@ devid=megatux
 devtitle=Megatux the game developer
 gameid=the-fire
 gametitle=The fire
-version=0.7
+version=0.8
 icon=metadata/icon.png
 
 # === Flags available at all licensing tiers ===

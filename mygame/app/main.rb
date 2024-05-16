@@ -2,13 +2,16 @@ class MyGame
   attr_gtk
   attr_reader :player
 
+  STATE_FILE = "state.dat"
+
   def initialize(engine)
     @args = engine
 
     state.screen = :start
     state.debug_on = false
     state.game_paused = false
-    @score = @hiscore = 0
+    @score = 0
+    @hiscore = read_saved_hiscore
 
     # Entities
     @player = Player.new(@args, @args.grid.w / 2, @args.grid.h / 2)
@@ -74,7 +77,7 @@ class MyGame
 
       if coin_picked?
         @score += 1
-        @hiscore = @score if @score > @hiscore
+        update_hiscore if @score > @hiscore
         audio[:collected] ||= { input: "sounds/collected.wav" }
         @coin = new_coin
       end
@@ -187,6 +190,24 @@ class MyGame
       player.hit
       audio[:hit] ||= { input: "sounds/explode.wav" }
     end
+  end
+
+  def read_saved_hiscore
+    hiscore_file = @args.gtk.stat_file STATE_FILE
+    if hiscore_file
+      hiscore = (@args.gtk.read_file STATE_FILE).to_i
+    else
+      0
+    end
+  end
+
+  def write_hiscore(score)
+    @args.gtk.write_file STATE_FILE, score.to_s
+  end
+
+  def update_hiscore
+    @hiscore = @score
+    write_hiscore(@hiscore)
   end
 end
 
